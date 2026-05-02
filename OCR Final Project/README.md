@@ -1,16 +1,28 @@
-# Live OCR Text Recognition
+# Mobile-to-PC OCR Scanner
 
-This project is a real-time Optical Character Recognition (OCR) program. It accesses the computer's webcam, reads text from the video feed using AI, and draws bounding boxes around recognized words with confidence levels.
+A real-time OCR application that captures text via a mobile device camera and displays results on a desktop terminal.
 
 ## Prerequisites
-You need Python installed, along with the required libraries. Install them by running:
-`pip install -r requirements.txt`
+- Python
+- If using a mobile device, it must be on the same local network as the PC.
 
-## How to Run
-Execute the main Python script to launch the camera window:
-`python OCR_First_Test_Working.py`
-*(Press 'q' while the camera window is selected to quit the program).*
+## Installation
+Install the required Python packages:
+pip install -r requirements.txt
 
-## Future Roadmap
-- Port the live feed to an HTML webpage.
-- Access the feed via mobile device (iPhone) acting as a client, with the laptop as the host server.
+# Usage
+## Computer
+1. Run StartScanner.bat or execute 'python app.py'.
+2. If prompted with a warning on the webpage, click 'Advanced', then 'Continue'. You might have to refresh the page if the page does not load at first.
+
+## Mobile Device
+1. Run StartScanner.bat or execute 'python app.py'.
+2. If prompted with a warning on the webpage, click 'Advanced', then 'Continue'. You might have to refresh the page if the page does not load at first.
+3. Follow the instructions in the Command Prompt/Terminal that should have opened when you started StartScanner.bat or executed 'python app.py'.
+
+## Tech Stack
+- Python
+- Flask
+- EasyOCR
+- OpenCV
+- HTML5/JavaScript (Camera Stream API)

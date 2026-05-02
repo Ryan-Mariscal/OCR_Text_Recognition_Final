@@ -1,10 +1,17 @@
+# Python environment
 __pycache__/
-Include/
 Lib/
+Include/
 Scripts/
 share/
 pyvenv.cfg
-.vscode/
+
+# Large Model Files
 *.pt
+*.pth
+*.onnx
+
+# IDE and OS Junk
+.vscode/
 .DS_Store
 Thumbs.db
