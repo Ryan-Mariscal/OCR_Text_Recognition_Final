@@ -1,6 +1,6 @@
-# Mobile-to-PC OCR Scanner
+# OCR Text Recognition Scanner
 
-A real-time OCR application that captures text via a mobile device camera and displays results on a desktop terminal.
+A real-time OCR application that captures text through a camera and displays it in plain text, able to be copied.
 All relevent files are nested inside of the OCR Final Project folder.
 
 ## Prerequisites
