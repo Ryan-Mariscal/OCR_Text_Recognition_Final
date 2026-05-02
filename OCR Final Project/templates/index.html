@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Text Scanner</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background-color: #121212; 
+            color: #ffffff; 
+            margin: 0;
+            padding: 20px;
+        }
+        h2 { margin-top: 10px; font-weight: 600; letter-spacing: 0.5px; }
+        
+        .container { max-width: 500px; margin: 0 auto; }
+
+        .video-wrapper {
+            background-color: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        video { width: 100%; display: block; }
+
+        .capture-btn {
+            background-color: #0A84FF; 
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 14px;
+            width: 100%;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(10, 132, 255, 0.3);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .capture-btn:active { transform: scale(0.98); }
+        .capture-btn:disabled {
+            background-color: #3A3A3C;
+            color: #8E8E93;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* NEW: Fixes Dropdown Button */
+        .fixes-btn {
+            background-color: #2C2C2E;
+            color: #E5E5EA;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 14px;
+            width: 100%;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .fixes-btn:active { transform: scale(0.98); }
+
+        /* Dropdown Container Hidden by Default */
+        .toggles-container {
+            background-color: #2C2C2E;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden; 
+            display: none; 
+        }
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #39393D; 
+        }
+        .toggle-wrapper:last-child { border-bottom: none; }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #39393D;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #30D158; } 
+        input:checked + .slider:before { transform: translateX(20px); }
+        
+        .toggle-label { font-size: 15px; font-weight: 500; color: #E5E5EA; flex-grow: 1; }
+        .info-btn { background: none; border: none; color: #0A84FF; font-size: 18px; cursor: pointer; padding: 0; }
+
+        #results-container { 
+            background-color: #1C1C1E; 
+            border-radius: 16px;
+            padding: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        /* Results Header Area */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        h3 { margin: 0; color: #8E8E93; font-size: 14px; text-transform: uppercase; }
+
+        /* NEW: Copy Button */
+        .copy-btn {
+            background-color: #3A3A3C;
+            color: #E5E5EA;
+            border: none;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:active { background-color: #48484A; }
+
+        .paragraph-text { font-size: 18px; line-height: 1.5; font-weight: 500; margin-bottom: 15px; }
+        .confidence-badge {
+            display: inline-block;
+            color: #30D158;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border: 1px solid #30D158;
+            border-radius: 8px;
+            background-color: rgba(48, 209, 88, 0.1);
+            display: none; 
+        }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+        }
+        .modal-content {
+            background-color: #1C1C1E;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 350px;
+            width: 100%;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        .modal-content p {
+            margin-top: 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #E5E5EA;
+            white-space: pre-wrap; 
+        }
+        .modal-close-btn {
+            background-color: #3A3A3C;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:active { background-color: #48484A; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OCR Scanner</h2>
+
+        <div class="video-wrapper">
+            <video id="video" autoplay playsinline></video>
+        </div>
+        
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        <button id="capture-btn" class="capture-btn">Capture & Scan</button>
+        <button id="fixes-btn" class="fixes-btn">Fixes ▼</button>
+
+        <div class="toggles-container" id="toggles-container">
+            <div class="toggle-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="dash-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Fix Em Dashes (—)</span>
+                <button class="info-btn" onclick="showModal('How to use:\n\nThe AI often misreads long em dashes (—) in books as underlines (_). \n\nTurn this ON to automatically convert any underlines it finds back into proper dashes.')">ⓘ</button>
+            </div>
+            <div class="toggle-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="zero-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Fix Zeros (0 to o)</span>
+                <button class="info-btn" onclick="showModal('How to use:\n\nOCR sometimes struggles to tell the difference between a zero (0) and the letter o. \n\nTurn this ON to automatically convert all scanned zeros back into lowercase o\'s.')">ⓘ</button>
+            </div>
+            <div class="toggle-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="dollar-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Fix Dollars ($ to s)</span>
+                <button class="info-btn" onclick="showModal('How to use:\n\nOCR occasionally misreads the letter s as a dollar sign ($) in certain fonts. \n\nTurn this ON to automatically convert all scanned dollar signs back into lowercase s\'s.')">ⓘ</button>
+            </div>
+            <div class="toggle-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="number-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Remove Numbers (0-9)</span>
+                <button class="info-btn" onclick="showModal('How to use:\n\nTurn this ON to automatically delete all numerical digits (0-9) from the final text. \n\nHighly useful for ignoring superscript citation numbers often found in books.')">ⓘ</button>
+            </div>
+        </div>
+
+        <div id="results-container">
+            <div class="results-header">
+                <h3>Scanned Paragraph</h3>
+                <button id="copy-btn" class="copy-btn">Copy</button>
+            </div>
+            <div id="text-output" class="paragraph-text">Ready to scan.</div>
+            <div id="confidence-output" class="confidence-badge"></div>
+        </div>
+    </div>
+
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <button class="modal-close-btn" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const textOutput = document.getElementById('text-output');
+        const confidenceOutput = document.getElementById('confidence-output');
+        
+        // Buttons
+        const captureBtn = document.getElementById('capture-btn');
+        const fixesBtn = document.getElementById('fixes-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const togglesContainer = document.getElementById('toggles-container');
+
+        // Toggles
+        const dashToggle = document.getElementById('dash-toggle');
+        const zeroToggle = document.getElementById('zero-toggle');
+        const dollarToggle = document.getElementById('dollar-toggle');
+        const numberToggle = document.getElementById('number-toggle'); // NEW
+        
+        // Modal elements
+        const modalOverlay = document.getElementById('info-modal');
+        const modalText = document.getElementById('modal-text');
+
+        // Modal Functions
+        function showModal(text) {
+            modalText.innerText = text;
+            modalOverlay.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modalOverlay.style.display = 'none';
+        }
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Start Camera
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { showModal("Camera error: " + err); });
+
+        // Dropdown Toggle Logic
+        fixesBtn.addEventListener('click', () => {
+            if (togglesContainer.style.display === 'none' || togglesContainer.style.display === '') {
+                togglesContainer.style.display = 'block';
+                fixesBtn.innerText = 'Fixes ▲';
+            } else {
+                togglesContainer.style.display = 'none';
+                fixesBtn.innerText = 'Fixes ▼';
+            }
+        });
+
+        // Copy Button Logic
+        copyBtn.addEventListener('click', () => {
+            const currentText = textOutput.innerText;
+            // Only copy if there is actual scanned text
+            if (currentText && currentText !== 'Ready to scan.' && currentText !== 'Scanning...') {
+                navigator.clipboard.writeText(currentText).then(() => {
+                    const originalText = copyBtn.innerText;
+                    copyBtn.innerText = "Copied!";
+                    copyBtn.style.backgroundColor = "#30D158"; // Flash green
+                    
+                    setTimeout(() => { 
+                        copyBtn.innerText = originalText; 
+                        copyBtn.style.backgroundColor = ""; // Reset color
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+        });
+
+        // Capture & Scan Logic
+        captureBtn.addEventListener('click', () => {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                captureBtn.disabled = true;
+                captureBtn.innerText = "Scanning...";
+                textOutput.innerHTML = '<span style="color: #8E8E93;">Scanning...</span>';
+                confidenceOutput.style.display = 'none';
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/jpeg', 0.8); 
+                
+                fetch('/process_frame', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: imageData })
+                })
+                .then(response => response.json()) 
+                .then(data => {
+                    captureBtn.disabled = false;
+                    captureBtn.innerText = "Capture & Scan";
+
+                    if (data.full_text && data.full_text.length > 0) {
+                        let finalText = data.full_text;
+                        
+                        // Apply active fixes
+                        if (dashToggle.checked) finalText = finalText.replace(/_/g, '—');
+                        if (zeroToggle.checked) finalText = finalText.replace(/0/g, 'o');
+                        if (dollarToggle.checked) finalText = finalText.replace(/\$/g, 's');
+                        // NEW: Remove all digits 0-9
+                        if (numberToggle.checked) finalText = finalText.replace(/[0-9]/g, '');
+                        
+                        textOutput.innerHTML = finalText;
+                        confidenceOutput.innerHTML = `Avg Confidence: ${data.confidence}%`;
+                        confidenceOutput.style.display = 'inline-block';
+                    } else {
+                        textOutput.innerHTML = '<span style="color: #FF6961;">No text detected. Try again!</span>';
+                        confidenceOutput.style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    captureBtn.disabled = false;
+                    captureBtn.innerText = "Capture & Scan";
+                    textOutput.innerHTML = '<span style="color: #FF6961;">Error connecting to server.</span>';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
