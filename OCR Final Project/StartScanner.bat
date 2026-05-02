@@ -36,5 +36,10 @@ echo.
 echo [3/3] Starting Server...
 echo (Keep this window open while scanning!)
 echo.
-python app.py
+
+:: This line opens your default browser to the local address
+start https://localhost:5000
+
+:: This starts the Python server
+"Scripts\python.exe" app.py
 pause
