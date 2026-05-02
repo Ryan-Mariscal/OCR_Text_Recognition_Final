@@ -1,6 +1,7 @@
 # Mobile-to-PC OCR Scanner
 
 A real-time OCR application that captures text via a mobile device camera and displays results on a desktop terminal.
+All relevent files are nested inside of the OCR Final Project folder.
 
 ## Prerequisites
 - Python
