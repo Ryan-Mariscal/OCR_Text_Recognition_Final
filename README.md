@@ -25,6 +25,7 @@ pip install -r requirements.txt
 ## Computer
 1. Run StartScanner.bat or execute 'python app.py' (This will start the local server necessary to run the Scanner).
 2. If prompted with a warning on the webpage, click 'Advanced', then 'Continue'. You might have to refresh the page if the page does not load at first.
+3. 
 <ins>Do not close the terminal popup, you need it to stop the scanner.</ins>
 
 ## Mobile Device
@@ -32,6 +33,7 @@ pip install -r requirements.txt
 2. If prompted with a warning on the webpage, click 'Advanced', then 'Continue'. You might have to refresh the page if the page does not load at first.
 3. Follow the instructions in the Command Prompt/Terminal that should have opened when you started StartScanner.bat or executed 'python app.py'.
 4. <ins>The device running the Scanner Server and the mobile device are REQUIRED to be on the same network/WiFi.</ins>
+
 <ins>Do not close the terminal popup, you need it to stop the scanner.</ins>
 
 ## 'Fixes' Tab
